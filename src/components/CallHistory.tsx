@@ -25,7 +25,7 @@ const CallHistory = ({ userId }: { userId: string }) => {
 
   const fetchCallHistory = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("call_history")
         .select(`
           id,
@@ -40,7 +40,7 @@ const CallHistory = ({ userId }: { userId: string }) => {
         `)
         .or(`caller_id.eq.${userId},receiver_id.eq.${userId}`)
         .order("started_at", { ascending: false })
-        .limit(50);
+        .limit(50) as any;
 
       if (error) throw error;
 
