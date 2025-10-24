@@ -36,7 +36,7 @@ const GroupRooms = ({ userId }: { userId: string }) => {
 
   const fetchRooms = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("room_participants")
         .select(`
           room_id,
@@ -47,16 +47,16 @@ const GroupRooms = ({ userId }: { userId: string }) => {
             created_at
           )
         `)
-        .eq("user_id", userId) as any;
+        .eq("user_id", userId);
 
       if (error) throw error;
 
       const roomsList = await Promise.all(
         (data || []).map(async (item: any) => {
-          const { count } = await supabase
+          const { count } = await (supabase as any)
             .from("room_participants")
             .select("*", { count: "exact", head: true })
-            .eq("room_id", item.group_rooms.id) as any;
+            .eq("room_id", item.group_rooms.id);
 
           return {
             id: item.group_rooms.id,
@@ -85,7 +85,7 @@ const GroupRooms = ({ userId }: { userId: string }) => {
     try {
       const inviteCode = Math.random().toString(36).substring(2, 10);
       
-      const { data: room, error: roomError } = await supabase
+      const { data: room, error: roomError } = await (supabase as any)
         .from("group_rooms")
         .insert({
           name: newRoomName,
@@ -93,16 +93,16 @@ const GroupRooms = ({ userId }: { userId: string }) => {
           invite_code: inviteCode,
         })
         .select()
-        .single() as any;
+        .single();
 
       if (roomError) throw roomError;
 
-      const { error: participantError } = await supabase
+      const { error: participantError } = await (supabase as any)
         .from("room_participants")
         .insert({
           room_id: room.id,
           user_id: userId,
-        }) as any;
+        });
 
       if (participantError) throw participantError;
 
@@ -122,23 +122,23 @@ const GroupRooms = ({ userId }: { userId: string }) => {
     }
 
     try {
-      const { data: room, error: roomError } = await supabase
+      const { data: room, error: roomError } = await (supabase as any)
         .from("group_rooms")
         .select("id")
         .eq("invite_code", joinCode.trim())
-        .single() as any;
+        .single();
 
       if (roomError || !room) {
         toast.error("Invalid invite code");
         return;
       }
 
-      const { error: participantError } = await supabase
+      const { error: participantError } = await (supabase as any)
         .from("room_participants")
         .insert({
           room_id: room.id,
           user_id: userId,
-        }) as any;
+        });
 
       if (participantError) {
         if (participantError.code === "23505") {

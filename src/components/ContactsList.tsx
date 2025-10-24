@@ -32,7 +32,7 @@ const ContactsList = ({ userId }: { userId: string }) => {
 
   const fetchContacts = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("contacts")
         .select(`
           contact_id,
@@ -43,7 +43,7 @@ const ContactsList = ({ userId }: { userId: string }) => {
             avatar_url
           )
         `)
-        .eq("user_id", userId) as any;
+        .eq("user_id", userId);
 
       if (error) throw error;
 
@@ -66,12 +66,12 @@ const ContactsList = ({ userId }: { userId: string }) => {
     if (!searchQuery.trim()) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("profiles")
         .select("id, username, status, avatar_url")
         .ilike("username", `%${searchQuery}%`)
         .neq("id", userId)
-        .limit(10) as any;
+        .limit(10);
 
       if (error) throw error;
       setSearchResults(data || []);
@@ -82,10 +82,10 @@ const ContactsList = ({ userId }: { userId: string }) => {
 
   const addContact = async (contactId: string) => {
     try {
-      const { error } = await supabase.from("contacts").insert({
+      const { error } = await (supabase as any).from("contacts").insert({
         user_id: userId,
         contact_id: contactId,
-      }) as any;
+      });
 
       if (error) throw error;
       toast.success("Contact added!");
